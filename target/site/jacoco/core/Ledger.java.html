@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Ledger.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AccountingProject</a> &gt; <a href="index.source.html" class="el_package">core</a> &gt; <span class="el_source">Ledger.java</span></div><h1>Ledger.java</h1><pre class="source lang-java linenums">package core;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.Sets;
+import core.account.Account;
+import core.account.AccountDetails;
+import core.account.AccountingEntry;
+import core.chartofaccounts.ChartOfAccounts;
+import core.transaction.AccountingTransaction;
+import core.transaction.AccountingTransactionBuilder;
+import lombok.Getter;
+
+import lombok.val;
+import org.jetbrains.annotations.Nullable;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkArgument;
+
+/**
+ * Represents a set of accounts and their transactions.
+ */
+final public class Ledger {
+<span class="fc" id="L25">    final private HashMap&lt;String, Account&gt; accountNumberToAccount = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L27">    @Getter</span>
+    final private Journal journal = new Journal();
+<span class="fc" id="L29">    @Getter</span>
+    final private ChartOfAccounts coa;
+
+<span class="fc" id="L32">    public Ledger(ChartOfAccounts coa) {</span>
+<span class="fc" id="L33">        this.coa = coa;</span>
+        // Create coa accounts
+<span class="fc" id="L35">        coa.getAccountNumberToAccountDetails().values().forEach(this::addAccount);</span>
+<span class="fc" id="L36">    }</span>
+
+    public Ledger(Journal journal, ChartOfAccounts coa) {
+<span class="fc" id="L39">        this(coa);</span>
+        // Add transactions
+<span class="fc" id="L41">        journal.getTransactions().forEach(this::commitTransaction);</span>
+<span class="fc" id="L42">    }</span>
+
+    public AccountingTransactionBuilder createTransaction(@Nullable Map&lt;String, String&gt; info) {
+<span class="nc" id="L45">        return AccountingTransactionBuilder.create(info);</span>
+    }
+
+    public void commitTransaction(AccountingTransaction transaction) {
+        // Add entries to accounts
+<span class="fc" id="L50">        transaction.getEntries().forEach(this::addAccountEntry);</span>
+<span class="fc" id="L51">        journal.addTransaction(transaction);</span>
+<span class="fc" id="L52">    }</span>
+
+    public TrialBalanceResult computeTrialBalance() {
+<span class="fc" id="L55">        return new TrialBalanceResult(Sets.newHashSet(accountNumberToAccount.values()));</span>
+    }
+
+    public BigDecimal getAccountBalance(String accountNumber) {
+<span class="fc" id="L59">        return accountNumberToAccount.get(accountNumber).getBalance();</span>
+    }
+
+    private void addAccount(AccountDetails accountDetails) {
+<span class="fc" id="L63">        String newAccountNumber = accountDetails.getAccountNumber();</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        boolean accountNumberNotInUse = !accountNumberToAccount.containsKey(newAccountNumber);</span>
+<span class="fc" id="L65">        checkArgument(accountNumberNotInUse,</span>
+                &quot;An account with the account number %s exists already in the ledger&quot;, newAccountNumber);
+<span class="fc" id="L67">        accountNumberToAccount.put(accountDetails.getAccountNumber(), new Account(accountDetails));</span>
+<span class="fc" id="L68">    }</span>
+
+    private void addAccountEntry(AccountingEntry entry) {
+<span class="fc" id="L71">        val account = accountNumberToAccount.get(entry.getAccountNumber());</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (account == null) {</span>
+<span class="fc" id="L73">            throw new IllegalStateException(&quot;Entry references missing account&quot;);</span>
+        }
+<span class="fc" id="L75">        account.addEntry(entry);</span>
+<span class="fc" id="L76">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L80">        return MoreObjects.toStringHelper(this)</span>
+<span class="nc" id="L81">                .add(&quot;accountNumberToAccountMap&quot;, accountNumberToAccount)</span>
+<span class="nc" id="L82">                .add(&quot;journal&quot;, journal)</span>
+<span class="nc" id="L83">                .add(&quot;chartOfAccounts&quot;, coa)</span>
+<span class="nc" id="L84">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
