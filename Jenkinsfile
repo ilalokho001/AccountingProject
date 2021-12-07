@@ -4,18 +4,13 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                 withMaven(maven : 'apache-maven-3.8.4') {
-                    gi ''
-                    sh 'mvn clean compile'
-                }
+                sh 'mvn clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                 withMaven(maven : 'apache-maven-3.8.4') {
-                    sh 'mvn test'
-                }
+                sh 'mvn test'
             }
             post {
                 always {
@@ -26,9 +21,7 @@ pipeline {
 
          stage ('Deploy') {
             steps {
-                withMaven(maven : 'apache-maven-3.8.4') {
-                    sh 'mvn deploy'
-                }
+                sh 'mvn deploy'
             }
          }
     }
