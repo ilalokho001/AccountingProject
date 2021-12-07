@@ -5,8 +5,10 @@ pipeline {
         stage('Build') {
             steps {
                  withMaven(maven : 'apache-maven-3.8.4') {
-                    sh 'mvn clean'
-                    sh 'mvn compile'
+                    sh 'mvn - f ("C://Users//Efe//Downloads//AccountingProject//AccountingProject//pom.xml") clean'
+                     sh 'mvn - f ("C://Users//Efe//Downloads//AccountingProject//AccountingProject//pom.xml") compile'
+                    //sh 'mvn clean'
+                    //sh 'mvn compile'
                 }
             }
         }
@@ -14,7 +16,7 @@ pipeline {
         stage('Test') {
             steps {
                  withMaven(maven : 'apache-maven-3.8.4') {
-                    sh 'mvn test'
+                     sh 'mvn - f ("C://Users//Efe//Downloads//AccountingProject//AccountingProject//pom.xml") test'
                  }
             }
             post {
@@ -27,7 +29,7 @@ pipeline {
          stage ('Deploy') {
             steps {
                 withMaven(maven : 'apache-maven-3.8.4') {
-                    sh 'mvn deploy'
+                     sh 'mvn - f ("C://Users//Efe//Downloads//AccountingProject//AccountingProject//pom.xml") deploy'
                 }
             }
          }
