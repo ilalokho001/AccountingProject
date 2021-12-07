@@ -12,10 +12,11 @@ pipeline {
         stage('Test') {
             steps {
                 sh 'mvn test'
+                sh 'mvn surefire-report:report'
             }
             post {
                 always {
-                    junit allowEmptyResults: true, testResults: "target/surefire-reports/*.xml"
+                    junit allowEmptyResults: true, testResults: "target/site/*.html"
                 }
             }
         }
