@@ -10,6 +10,7 @@ import core.transaction.AccountingTransaction;
 import core.transaction.AccountingTransactionBuilder;
 import lombok.Getter;
 
+import lombok.val;
 import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ final public class Ledger {
     }
 
     private void addAccountEntry(AccountingEntry entry) {
-        var account = accountNumberToAccount.get(entry.getAccountNumber());
+        val account = accountNumberToAccount.get(entry.getAccountNumber());
         if (account == null) {
             throw new IllegalStateException("Entry references missing account");
         }

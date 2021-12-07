@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountingTransaction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AccountingProject</a> &gt; <a href="index.source.html" class="el_package">core.transaction</a> &gt; <span class="el_source">AccountingTransaction.java</span></div><h1>AccountingTransaction.java</h1><pre class="source lang-java linenums">package core.transaction;
+
+import core.account.AccountSide;
+import core.account.AccountingEntry;
+import lombok.Getter;
+
+import javax.annotation.Nullable;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * Represents a group of related account entries.
+ */
+public class AccountingTransaction {
+    final private Set&lt;AccountingEntry&gt; entries;
+
+<span class="fc" id="L21">    @Getter</span>
+    final private long bookingDateTimestamp;
+
+<span class="fc" id="L24">    @Getter</span>
+    final private Map&lt;String, String&gt; info;
+
+    public AccountingTransaction(Set&lt;AccountingEntry&gt; entries,
+                                 @Nullable Map&lt;String, String&gt; info,
+<span class="fc" id="L29">                                 long bookingDateTimestamp) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (info == null) info = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L31">        this.info = info;</span>
+<span class="fc" id="L32">        this.entries = checkNotNull(entries);</span>
+<span class="fc" id="L33">        this.bookingDateTimestamp = bookingDateTimestamp;</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        checkArgument(!entries.isEmpty());</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        checkArgument(entries.size() &gt;= 2, &quot;A transaction consists of at least two entries&quot;);</span>
+<span class="fc" id="L36">        checkArgument(isBalanced(), &quot;Transaction unbalanced&quot;);</span>
+<span class="fc" id="L37">        entries.forEach(e -&gt; e.setTransaction(this));</span>
+<span class="fc" id="L38">    }</span>
+
+    public AccountingTransaction(Set&lt;AccountingEntry&gt; entries, Map&lt;String, String&gt; info) {
+<span class="fc" id="L41">        this(entries, info, Instant.now().toEpochMilli());</span>
+<span class="fc" id="L42">    }</span>
+
+    public AccountingTransaction(Set&lt;AccountingEntry&gt; entries) {
+<span class="fc" id="L45">        this(entries, null, Instant.now().toEpochMilli());</span>
+<span class="fc" id="L46">    }</span>
+
+    public boolean isBalanced() {
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        BigDecimal debits = entries.stream().map(e -&gt; e.getAccountSide() == AccountSide.DEBIT ?</span>
+<span class="fc" id="L50">                e.getAmount() : e.getAmount().negate()).reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        return debits.compareTo(BigDecimal.ZERO) == 0;</span>
+    }
+
+    public List&lt;AccountingEntry&gt; getEntries() {
+<span class="fc" id="L55">        return new ArrayList&lt;&gt;(entries);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L60">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L61">        sb.append(&quot;Transaction &quot;)</span>
+<span class="nc" id="L62">                .append(Instant.ofEpochMilli(bookingDateTimestamp).toString())</span>
+<span class="nc" id="L63">                .append(&quot;\n&quot;);</span>
+<span class="nc" id="L64">        entries.stream().forEach(e -&gt; sb.append(e).append(&quot;\n&quot;));</span>
+<span class="nc" id="L65">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
