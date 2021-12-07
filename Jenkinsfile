@@ -5,8 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                  withMaven(maven : 'apache-maven-3.8.4') {
-                    sh 'mvn clean'
-                    sh 'mvn compile'
+                    sh 'mvn -B clean package'
                 }
             }
         }
