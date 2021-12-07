@@ -5,8 +5,8 @@ pipeline {
         stage('Build') {
             steps {
                  withMaven(maven : 'apache-maven-3.8.4') {
-                    sh 'mvn - f ("C://Users//Efe//Downloads//AccountingProject//AccountingProject//pom.xml") clean'
-                   // sh 'mvn compile'
+                    sh 'mvn clean'
+                    sh 'mvn compile'
                 }
             }
         }
