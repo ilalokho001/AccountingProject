@@ -5,6 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                  withMaven(maven : 'apache-maven-3.8.4') {
+                    git 'https://github.com/ilalokho001/AccountingProject.git'
                     sh 'mvn clean'
                     sh 'mvn compile'
                 }
