@@ -1,0 +1,8 @@
+ChartOfAccountsTest.class
+core\reader\TabDelimitedReaderTest.class
+TrialBalanceTest.class
+AccountingEntryTest.class
+AccountingTransactionBuilderTest.class
+AccountTest.class
+LedgerTest.class
+AccountingTransactionTest.class
